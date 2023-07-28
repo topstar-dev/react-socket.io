@@ -1,16 +1,29 @@
 import React, {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = ({socket}) => {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    useEffect(() => {
+        socket.on("loginSuccess", (data) => {
+            toast.success(data.message);
+            localStorage.setItem("_id", data.data._id);
+            localStorage.setItem("_myEmail", data.data._email);
+            navigate("/photos");
+        })
+        socket.on("loginError", (error) => {
+            toast.error(error);
+        })
+    }, [socket, navigate]);
+
     const handleSignIn = e => {
         if(username.trim() && password.trim()) {
             e.preventDefault();
-            console.log({username, password});
+            socket.emit("login", { username, password });
             setPassword(prev => prev = "");
             setUsername(prev => prev = "")
         }

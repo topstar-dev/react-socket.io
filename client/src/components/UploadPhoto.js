@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const UploadPhoto = ({ socket }) => {
     const navigate = useNavigate();
     const [photoURL, setPhotoURL] = useState("");
 
+    useEffect(() => {
+        const id = localStorage.getItem("_id");
+        if(!id) {
+            navigate("/")
+        }
+    }, [navigate])
+
+    useEffect(() => {
+        socket.on("uploadPhotoMessage", (data) => {
+            toast.success(data);
+            navigate("/photos")
+        })
+    }, [socket, navigate]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(photoURL)
+        const id = localStorage.getItem("_id");
+        const email = localStorage.getItem("_myEmail");
+
+        socket.emit("uploadPhoto", { id, email, photoURL });
     };
 
     return (

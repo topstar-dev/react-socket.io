@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const Register = ({ socket }) => {
     const navigate = useNavigate();
@@ -8,13 +9,20 @@ const Register = ({ socket }) => {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
 
+    useEffect(() => {
+        socket.on("registerSuccess", (data) => {
+            toast.success(data);
+            navigate("/")
+        })
+        socket.on("registerError", (error) => {
+            toast.error(error);
+        })
+    }, [socket, navigate]);
+
     const handleRegister = e => {
         e.preventDefault();
         if (username.trim() && password.trim() && email.trim()) {
-            console.log({ username, email, password });
-            setPassword("");
-            setUsername("");
-            setEmail("");
+            socket.emit("register", { username, email, password });
         }
     }
 
