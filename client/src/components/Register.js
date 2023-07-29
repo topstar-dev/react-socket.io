@@ -11,6 +11,7 @@ const Register = ({ socket }) => {
 
     useEffect(() => {
         socket.on("registerSuccess", (data) => {
+            console.log(data);
             toast.success(data);
             navigate("/")
         })

@@ -16,7 +16,7 @@ const UploadPhoto = ({ socket }) => {
     useEffect(() => {
         socket.on("uploadPhotoMessage", (data) => {
             toast.success(data);
-            navigate("/photos")
+            navigate("/photos");
         })
     }, [socket, navigate]);
 
@@ -24,7 +24,7 @@ const UploadPhoto = ({ socket }) => {
         e.preventDefault();
         const id = localStorage.getItem("_id");
         const email = localStorage.getItem("_myEmail");
-
+        console.log(id);
         socket.emit("uploadPhoto", { id, email, photoURL });
     };
 

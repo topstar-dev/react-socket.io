@@ -1,14 +1,32 @@
+import PhotoContainer from "./PhotoContainer";
 import React, { useEffect, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 // React Router Configs
 import { Link, useNavigate } from "react-router-dom";;
-import PhotoContainer from "./PhotoContainer";
 // React-copy-to-clipboard config
-import { CopyToClipboard } from "react-copy-to-clipboard";
+
 
 const MyPhotos = ({ socket }) => {
     const navigate = useNavigate();
     const [photos, setPhotos] = useState([]);
     const [userLink, setUserLink] = useState("");
+
+    useEffect(() => {
+        const id = localStorage.getItem("_id");
+        if (!id) {
+            navigate("/");
+        } else {
+            //👇🏻 sends the user id to the server
+            socket.emit("getMyPhotos", id);
+        }
+    }, [navigate, socket]);
+
+    useEffect(() => {
+        socket.on("getMyPhotosMessage", (data) => {
+            setPhotos(data.data);
+            setUserLink(`http://localhost:3000/share/${data.username}`);
+        })
+    }, [socket])
     // navigates users to the homepage
     const handleSignOut = () => {
         localStorage.removeItem("_id");

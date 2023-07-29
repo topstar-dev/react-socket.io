@@ -9,6 +9,19 @@ const SharePhoto = ({ socket }) => {
 
     const { user } = useParams();
 
+    useEffect(() => {
+        const id = localStorage.getItem("_id");
+        if(!id) {
+            navigate("/");
+        } else {
+            socket.emit("sharePhoto", user);
+        }
+    }, [navigate, socket, user])
+
+    useEffect(() => {
+        socket.on("sharePhotoMessge", (data) => setPhotos(data));
+    }, [socket]);
+
     return (
         <div>
             <Nav />
